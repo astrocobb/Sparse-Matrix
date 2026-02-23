@@ -4,7 +4,7 @@
  * 02/22/2026
  * Assignment: Sparse Matrix
  * Purpose: Create a sparse matrix from a primitive matrix, create a primitive matrix from a sparse matrix, and get the
- *          that occurs the most in a matrix
+ *          value that occurs the most in a matrix.
  */
 
 
@@ -46,7 +46,7 @@ public class SparseMatrix {
         this.nonDefaultValues = entries;
 
         // Verify that converting back to a standard matrix matches the original input
-        assert matricesAreEqual(outputToMatrix(this), matrix);
+        assert matricesAreEqual(this.outputToMatrix(), matrix);
     }
 
     /**
@@ -63,7 +63,7 @@ public class SparseMatrix {
 
         for (int[] row : matrix) {
             for (int num : row) {
-                entries.put(num, entries.getOrDefault(num, 0) + 1); // Got this from Claude
+                entries.put(num, entries.getOrDefault(num, 0) + 1); // Claude
             }
         }
 
@@ -71,7 +71,7 @@ public class SparseMatrix {
         int maxKey = 0;
         int maxValue = 0;
 
-        for (Map.Entry<Integer, Integer> entry : entries.entrySet()) { // Got this from Claude
+        for (Map.Entry<Integer, Integer> entry : entries.entrySet()) { // Claude
             if (entry.getValue() > maxValue) {
                 maxValue = entry.getValue();
                 maxKey = entry.getKey();
@@ -82,16 +82,34 @@ public class SparseMatrix {
     }
 
     /**
-     * Converts a SparseMatrix back into a standard 2D array.
+     * Compares two 2D arrays for equality by checking dimensions and values.
      *
-     * @param sparseMatrix The SparseMatrix to convert.
+     * @param expected The first matrix to compare.
+     * @param actual The second matrix to compare.
+     * @return True if both matrices have the same size and contain the same values.
+     */
+    public static boolean matricesAreEqual(int[][] expected, int[][] actual) {
+
+        // Check that row and column counts match
+        if (expected.length != actual.length) return false;
+        if (expected[0].length != actual[0].length) return false;
+
+        // Compare each element
+        for (int i = 0; i < expected.length; i++) {
+            for (int j = 0; j < expected[i].length; j++) {
+                if (expected[i][j] != actual[i][j]) return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Converts this SparseMatrix back into a standard 2D array.
+     *
      * @return A 2D array reconstructed from the sparse representation.
      */
-    public static int[][] outputToMatrix(SparseMatrix sparseMatrix) {
-
-        int rows = sparseMatrix.rows;
-        int cols = sparseMatrix.cols;
-        int defaultValue = sparseMatrix.defaultValue;
+    public int[][] outputToMatrix() {
 
         // Fill the entire matrix with the default value
         int[][] resultMatrix = new int[rows][cols];
@@ -103,39 +121,18 @@ public class SparseMatrix {
         }
 
         // Overwrite positions that have non-default values
-        for (SparseEntry entry : sparseMatrix.nonDefaultValues) {
+        for (SparseEntry entry : nonDefaultValues) {
             resultMatrix[entry.row][entry.col] = entry.value;
         }
 
         return resultMatrix;
     }
 
-    /**
-     * Compares two 2D arrays for equality by checking dimensions and values.
-     *
-     * @param expected The first matrix to compare.
-     * @param actual The second matrix to compare.
-     * @return True if both matrices have the same size and contain the same values.
-     */
-    static boolean matricesAreEqual(int[][] expected, int[][] actual) {
-
-        // Check that row and column counts match
-        if (expected.length != actual.length) return false;
-        if (expected[0].length != actual[0].length) return false;
-
-        // Compare each row
-        for (int i = 0; i < expected.length; i++) {
-            if (expected[i] != actual[i]) return false;
-        }
-
-        return true;
-    }
-
     public static void main(String[] args) {
 
-        IO.println();
+        System.out.println();
 
-        IO.println("=============== TEST 1 ===============");
+        System.out.println("=============== TEST 1 ===============");
         int[][] testMatrix1 = {
             { 5, 0, 0, 0 },
             { 0, 8, 0, 0 },
@@ -143,12 +140,12 @@ public class SparseMatrix {
             { 0, 6, 0, 0 }
         };
         SparseMatrix sparse1 = new SparseMatrix(testMatrix1);
-        IO.println(sparseMatrixToString(sparse1));
-        IO.println();
-        int[][] result1 = outputToMatrix(sparse1);
-        IO.println(matrixToString(result1));
+        System.out.println(sparseMatrixToString(sparse1));
+        System.out.println();
+        int[][] result1 = sparse1.outputToMatrix();
+        System.out.println(matrixToString(result1));
 
-        IO.println("=============== TEST 2 ===============");
+        System.out.println("=============== TEST 2 ===============");
         int[][] testMatrix2 = {
             { 8, 8, 8, 8, 8, 8, 8, 8, 8, 9 },
             { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 },
@@ -162,14 +159,13 @@ public class SparseMatrix {
             { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 }
         };
         SparseMatrix sparse2 = new SparseMatrix(testMatrix2);
-        IO.println(sparseMatrixToString(sparse2));
-        IO.println();
-        int[][] result2 = outputToMatrix(sparse2);
-        IO.println(matrixToString(result2));
+        System.out.println(sparseMatrixToString(sparse2));
+        System.out.println();
+        int[][] result2 = sparse2.outputToMatrix();
+        System.out.println(matrixToString(result2));
 
-        IO.println("=============== TEST 3 ===============");
+        System.out.println("=============== TEST 3 ===============");
         int[][] testMatrix3 = {
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99 },
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -192,10 +188,10 @@ public class SparseMatrix {
             { 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 213, 0, 0, 0 }
         };
         SparseMatrix sparse3 = new SparseMatrix(testMatrix3);
-        IO.println(sparseMatrixToString(sparse3));
-        IO.println();
-        int[][] result3 = outputToMatrix(sparse3);
-        IO.println(matrixToString(result3));
+        System.out.println(sparseMatrixToString(sparse3));
+        System.out.println();
+        int[][] result3 = sparse3.outputToMatrix();
+        System.out.println(matrixToString(result3));
     }
 
     /**
@@ -246,9 +242,9 @@ public class SparseMatrix {
      */
     public static class SparseEntry {
 
-        int value;
-        int row;
-        int col;
+        private final int value;
+        private final int row;
+        private final int col;
 
         /**
          * Constructs a SparseEntry with a value and its position in the matrix.
